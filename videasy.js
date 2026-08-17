@@ -387,6 +387,24 @@ async function extractStreamUrl(ID) {
             return weightB - weightA;
         });
 
+        // Trim to a minimal picker: best standard option, plus 4K alongside it if one exists.
+        // "Standard" = highest-ranked stream that isn't 2160p/4K (so Auto if present, else 1080p, etc).
+        const is4K = (s) => s.title.includes("2160p") || s.title.includes("4K");
+
+        const bestStandard = streamObjects.find(s => !is4K(s));
+        const best4K = streamObjects.find(s => is4K(s));
+
+        let finalStreams = [];
+        if (best4K) finalStreams.push(best4K);
+        if (bestStandard) finalStreams.push(bestStandard);
+
+        // Fallback in the unlikely case only 4K sources exist
+        if (finalStreams.length === 0 && streamObjects.length > 0) {
+            finalStreams.push(streamObjects[0]);
+        }
+
+        streamObjects = finalStreams;
+
         // All English subtitles surfaced for selection, labeled consistently as "English"
         const formattedSubtitles = allSubtitles.map(sub => ({
             language: "English",
