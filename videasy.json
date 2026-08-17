@@ -18,5 +18,5 @@
   "type": "shows/movies/anime",
   "asyncJS": true,
   "softsub": true,
-  "downloadSupport": false,
+  "downloadSupport": false
 }
