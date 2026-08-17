@@ -14,14 +14,9 @@
   "quality": "4K",
   "baseUrl": "https://player.videasy.net/",
   "searchBaseUrl": "https://player.videasy.net/",
-  "scriptUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/videasy/videasy.js",
+  "scriptUrl": "https://raw.githubusercontent.com/JayGxnzalez/videasy/refs/heads/main/videasy.js",
   "type": "shows/movies/anime",
   "asyncJS": true,
   "softsub": true,
   "downloadSupport": false,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsEclipse": true
 }
