@@ -358,7 +358,7 @@ async function extractStreamUrl(ID) {
             nonHDRSources.forEach(src => {
                 if (!streamObjects.some(existing => existing.streamUrl === src.url)) {
                     streamObjects.push({
-                        title: `[${serverName}] ${flag} ${src.quality}`,
+                        title: src.quality,
                         streamUrl: src.url,
                         headers: {
                             "Origin": "https://player.videasy.to",
@@ -369,10 +369,11 @@ async function extractStreamUrl(ID) {
                 }
             });
 
-            // English-only subtitle pool: skip anything not tagged English
+            // English-only subtitle pool: catches "english", "en", "eng", etc.
             subtitles.forEach(sub => {
-                const lang = (sub.language || sub.lang || "").toLowerCase();
-                if (lang !== 'english') return;
+                const lang = (sub.language || sub.lang || "").toLowerCase().trim();
+                console.log(`[${serverName}] subtitle lang seen: "${lang}"`);
+                if (!(lang === 'english' || lang === 'en' || lang === 'eng' || lang.startsWith('en'))) return;
 
                 if (!allSubtitles.some(existing => existing.url === sub.url)) {
                     allSubtitles.push(sub);
@@ -410,6 +411,8 @@ async function extractStreamUrl(ID) {
             language: "English",
             url: `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(sub.url)}&type=vtt&referer=https%3A%2F%2Fplayer.videasy.to%2F`
         }));
+
+        console.log("Subtitle pool: " + JSON.stringify(formattedSubtitles));
 
         return JSON.stringify({
             streams: streamObjects,
