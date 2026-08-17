@@ -1,5 +1,3 @@
-//Thanks ibro for the TMDB search!
-
 async function searchResults(keyword) {
     try {
         let transformedResults = [];
