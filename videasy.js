@@ -372,7 +372,6 @@ async function extractStreamUrl(ID) {
             // English-only subtitle pool: catches "english", "en", "eng", etc.
             subtitles.forEach(sub => {
                 const lang = (sub.language || sub.lang || "").toLowerCase().trim();
-                console.log(`[${serverName}] subtitle lang seen: "${lang}"`);
                 if (!(lang === 'english' || lang === 'en' || lang === 'eng' || lang.startsWith('en'))) return;
 
                 if (!allSubtitles.some(existing => existing.url === sub.url)) {
@@ -423,8 +422,6 @@ async function extractStreamUrl(ID) {
 
         // subtitles must be a single default URL string, not an array
         const defaultSubtitleUrl = allSubtitlesFormatted.length ? allSubtitlesFormatted[0].url : '';
-
-        console.log("Subtitle pool: " + JSON.stringify(allSubtitlesFormatted));
 
         return JSON.stringify({
             streams: streamObjects,
