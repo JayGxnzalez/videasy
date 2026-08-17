@@ -209,7 +209,7 @@ async function extractStreamUrl(ID) {
             episodeNumber = parts[4];
             mediaType = "tv";
         } else {
-            return JSON.stringify({ streams: [] });
+            return JSON.stringify({ streams: [], subtitles: '', subtitlesHeaders: {}, allSubtitles: [] });
         }
 
         const tmdbUrl = `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/${mediaType}/${tmdbID}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids&language=en`)}&simple=true`;
@@ -406,21 +406,28 @@ async function extractStreamUrl(ID) {
 
         streamObjects = finalStreams;
 
-        // All English subtitles surfaced for selection, labeled consistently as "English"
-        const formattedSubtitles = allSubtitles.map(sub => ({
-            language: "English",
-            url: `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(sub.url)}&type=vtt&referer=https%3A%2F%2Fplayer.videasy.to%2F`
+        // Build allSubtitles in the shape Shirox expects (label, kind, headers per track)
+        const allSubtitlesFormatted = allSubtitles.map(sub => ({
+            url: `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(sub.url)}&type=vtt&referer=https%3A%2F%2Fplayer.videasy.to%2F`,
+            label: "English",
+            kind: "captions",
+            headers: {}
         }));
 
-        console.log("Subtitle pool: " + JSON.stringify(formattedSubtitles));
+        // subtitles must be a single default URL string, not an array
+        const defaultSubtitleUrl = allSubtitlesFormatted.length ? allSubtitlesFormatted[0].url : '';
+
+        console.log("Subtitle pool: " + JSON.stringify(allSubtitlesFormatted));
 
         return JSON.stringify({
             streams: streamObjects,
-            subtitles: formattedSubtitles
+            subtitles: defaultSubtitleUrl,
+            subtitlesHeaders: {},
+            allSubtitles: allSubtitlesFormatted
         });
     } catch (error) {
         console.log('Fetch error in extractStreamUrl: ' + error);
-        return JSON.stringify({ streams: [], subtitles: [] });
+        return JSON.stringify({ streams: [], subtitles: '', subtitlesHeaders: {}, allSubtitles: [] });
     }
 }
 
