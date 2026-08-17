@@ -406,12 +406,19 @@ async function extractStreamUrl(ID) {
 
         streamObjects = finalStreams;
 
-        // Build allSubtitles in the shape Shirox expects (label, kind, headers per track)
+        // Build allSubtitles in the shape Shirox expects (label, kind, headers per track).
+        // Pass raw subtitle URLs directly with headers instead of routing through the
+        // passthrough-worker, since that was producing "unknownFormat" load errors.
+        const subtitleHeaders = {
+            "Referer": "https://player.videasy.to/",
+            "Origin": "https://player.videasy.to"
+        };
+
         const allSubtitlesFormatted = allSubtitles.map(sub => ({
-            url: `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(sub.url)}&type=vtt&referer=https%3A%2F%2Fplayer.videasy.to%2F`,
+            url: sub.url,
             label: "English",
             kind: "captions",
-            headers: {}
+            headers: subtitleHeaders
         }));
 
         // subtitles must be a single default URL string, not an array
@@ -422,7 +429,7 @@ async function extractStreamUrl(ID) {
         return JSON.stringify({
             streams: streamObjects,
             subtitles: defaultSubtitleUrl,
-            subtitlesHeaders: {},
+            subtitlesHeaders: subtitleHeaders,
             allSubtitles: allSubtitlesFormatted
         });
     } catch (error) {
